@@ -1,0 +1,59 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: goodbye-world
+  name: goodbye-world
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: goodbye-world
+  template:
+    metadata:
+      labels:
+        app: goodbye-world
+    spec:
+      containers:
+      - image: paulczar/hello-world
+        name: goodbye-world
+        env:
+          - name: DATA_DIR
+            value: /data
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+        - name: data
+          configMap:
+            name: goodbye-world
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: goodbye-world
+  name: goodbye-world
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: goodbye-world
+  type: NodePort
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: goodbye-world
+data:
+  index.html: |+
+    <html>
+    <head>
+    <title>Goodbye Cruel World</title>
+    </head>
+    <body>
+    Goodbye Cruel World
+    </body>
+    </html>

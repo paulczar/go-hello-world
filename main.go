@@ -3,17 +3,26 @@ package main
 import (
     "net/http"
     "io/ioutil"
+    "os"
     "fmt"
+    "path"
     "github.com/dimiro1/health"
 )
 
 func loadFile(filename string) string {
-    content, err := ioutil.ReadFile(filename)
+    var dir,file string
+    if os.Getenv("DATA_DIR") != "" {
+      dir = os.Getenv("DATA_DIR")
+    } else {
+      dir = "."
+    }
+    file = path.Join(dir,filename)
+    content, err := ioutil.ReadFile(file)
     if err != nil {
-        fmt.Println("index.html not found, serving default hello world page")
+        fmt.Printf("%s not found, serving default hello world page", file)
         return "<html><head><title>hello world</title></head><body>hello world!</body></html>\n"
     }
-    fmt.Println("serving index.html file")
+    fmt.Println("serving %s file", file)
     return string(content)
 }
 
